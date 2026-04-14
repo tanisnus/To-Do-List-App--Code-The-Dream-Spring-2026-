@@ -10,10 +10,10 @@ function App() {
 
   return (
     <div>
-      <h1>My To Dos</h1>
+      <h1>My Todos</h1>
       <ul>
         {toDoList.map(todo => 
-          <li key={todo.id}> {todo.title}</li>)}
+          <li key={todo.id}>{todo.title}</li>)}
       </ul>
     </div>
   )
