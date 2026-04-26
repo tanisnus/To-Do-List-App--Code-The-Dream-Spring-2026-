@@ -9,11 +9,8 @@ const todos = [
   {id:3, title: "code out app"},
 ]
 
-
 function App() {
-  
   const [todoList, setTodoList] = useState(todos);
-
 
   return (
     <div>
