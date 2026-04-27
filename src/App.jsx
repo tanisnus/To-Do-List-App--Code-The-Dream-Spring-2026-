@@ -3,19 +3,27 @@ import TodoList from './TodoList';
 import TodoForm from './TodoForm';
 import { useState } from 'react';
 
-const todos = [
-  {id:1 , title: "review resources"},
-  {id:2, title: "take notes"},
-  {id:3, title: "code out app"},
-]
 
 function App() {
-  const [todoList, setTodoList] = useState(todos);
+  const [todoList, setTodoList] = useState([]);
+  
+  // This is a callback function that is passed to the TodoForm component
+  // This callback function updates the todoList state 
+  const addTodo = (todoTitle) => {
+
+    const todo = {
+      id: Date.now(),
+      title: todoTitle
+    }
+    setTodoList(previous => [todo, ...previous])
+
+  }
+
 
   return (
     <div>
       <h1>My Todos</h1>
-      <TodoForm />
+      <TodoForm onAddTodo={addTodo}/>
       <TodoList todoList={todoList} />
     
     </div>
