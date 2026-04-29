@@ -8,9 +8,9 @@ function TodoForm({onAddTodo}) {
         event.preventDefault();
 
         // Explore the event object (we'll remove this later)
-        console.log('Event object:', event);
-        console.log('Event target:', event.target);
-        console.log('Input value:', event.target.todoTitle.value);
+        // console.log('Event object:', event);
+        // console.log('Event target:', event.target);
+        // console.log('Input value:', event.target.todoTitle.value);
 
 
         // .trim prevents whitespace only todos
