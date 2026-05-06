@@ -13,18 +13,26 @@ function App() {
 
     const todo = {
       id: Date.now(),
-      title: todoTitle
+      title: todoTitle,
+      isCompleted: false,
+
     }
     setTodoList(previous => [todo, ...previous])
 
   }
 
+  
+  const completeTodo = (id) => {
+    // loop through the array "todoList" using "previous" and find the todo with the matching id
+    // using object spreading to create a new object with the updated isCompleted property set to true
+    setTodoList(previous => previous.map(todo => todo.id === id ? {...todo, isCompleted: true} : todo))
+  }
 
   return (
     <div>
       <h1>My Todos</h1>
       <TodoForm onAddTodo={addTodo}/>
-      <TodoList todoList={todoList} />
+      <TodoList todoList={todoList} onCompleteTodo={completeTodo} />
     
     </div>
   )
