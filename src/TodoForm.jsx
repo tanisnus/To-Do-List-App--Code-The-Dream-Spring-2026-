@@ -1,18 +1,18 @@
 import {useRef} from 'react';
+import {useState} from 'react';
+
 
 function TodoForm({onAddTodo}) {
 
     const inputRef = useRef();
+    const [workingTodoTitle, setWorkingTodoTitle] = useState('');
 
     const handleAddTodo = (event) => {
         event.preventDefault();
 
-        // .trim prevents whitespace only todos
-        const todoTitle = event.target.todoTitle.value.trim();
-        if (todoTitle) {
-            // call the onAddTodo callback function to add the "todo" to the list
-            onAddTodo(todoTitle);
-            event.target.reset();
+        if (workingTodoTitle) {
+            onAddTodo(workingTodoTitle);
+            setWorkingTodoTitle('');
             inputRef.current.focus();
         }
 
@@ -22,6 +22,8 @@ function TodoForm({onAddTodo}) {
         <form onSubmit={handleAddTodo}>
             <label htmlFor="todoTitle">Todo</label>
             <input 
+                value={workingTodoTitle}
+                onChange={(event) => setWorkingTodoTitle(event.target.value)}
                 ref={inputRef}
                 type="text" 
                 id="todoTitle"
@@ -29,7 +31,10 @@ function TodoForm({onAddTodo}) {
                 placeholder={'Todo text'}
                 required
             />
-            <button type="submit">
+            <button 
+                type="submit"
+                disabled= {!workingTodoTitle.trim()}
+            >
                 Add Todo
             </button>
         </form>
