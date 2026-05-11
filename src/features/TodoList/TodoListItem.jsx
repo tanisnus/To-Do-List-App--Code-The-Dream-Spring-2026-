@@ -1,3 +1,5 @@
+// todo is an 
+
 export default function TodoListItem({ todo, onCompleteTodo }) {
   return (
         
