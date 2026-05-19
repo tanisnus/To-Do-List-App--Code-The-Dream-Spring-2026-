@@ -1,4 +1,4 @@
-import TodoListItem from './TodoListItem';
+import TodoListItem from '../../features/TodoList/TodoListItem';
 
 function TodoList({ todoList, onCompleteTodo, onUpdateTodo }) {
 
