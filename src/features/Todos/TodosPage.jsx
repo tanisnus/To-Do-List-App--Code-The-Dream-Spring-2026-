@@ -92,7 +92,7 @@ function TodosPage({token}) {
     
     const completeTodo = async (id) => {
       const originalTodo = todoList.find(todo => todo.id === id);
-      
+
       if (!originalTodo) {
         return;
       }
@@ -137,16 +137,65 @@ function TodosPage({token}) {
       }
     }
 
-    const updateTodo = (editedTodo) => {
-      const updatedTodos = todoList.map(todo => todo.id === editedTodo.id ? {...todo, ...editedTodo} : todo)
-      setTodoList(updatedTodos)
+    const updateTodo = async (editedTodo) => {
+      const originalTodo = todoList.find(todo => todo.id === editedTodo.id);
+
+      if (!originalTodo) {
+        return;
+      }
+
+      setTodoList(previous =>
+        previous.map(todo =>
+          todo.id === editedTodo.id ? { ...todo, ...editedTodo } : todo
+        )
+      );
+
+      try {
+        const response = await fetch(`/api/tasks/${editedTodo.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            title: editedTodo.title,
+            isCompleted: editedTodo.isCompleted,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update todo');
+        }
+
+        const data = await response.json();
+        setTodoList(previous =>
+          // Go through every todo in the list.
+          // If this one's id matches the id of the todo we just updated → use the server's version.
+          // Otherwise → leave it alone.
+          previous.map(todo => (todo.id === editedTodo.id ? data : todo))
+        );
+      } catch (error) {
+        setTodoList(previous =>
+          previous.map(todo =>
+            todo.id === editedTodo.id ? originalTodo : todo
+          )
+        );
+        setError(error.message);
+      }
     }
 
-    
   return (
     <div>
       {isTodoListLoading && <p>Loading todos...</p>}
-      {error && <p>{error}</p>}
+      {error && (
+        <section>
+          <p>{error}</p>
+          <button type="button" onClick={() => setError('')}>
+            Clear Error
+          </button>
+        </section>
+      )}
       <TodoForm onAddTodo={addTodo} />
       <TodoList todoList={todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo}/>
     </div>
