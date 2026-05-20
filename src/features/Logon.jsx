@@ -1,14 +1,13 @@
 import { useState } from 'react';
+import TextInputWithLabel from '../shared/TextInputWithLabel';
 
-function Login({onSetEmail, onSetToken}) {
+function Logon({onSetEmail, onSetToken}) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [authError, setAuthError] = useState('');
     const [isLoggingOn, setIsLoggingOn] = useState(false);
 
-    // function setEmail({ setEmail = () => {} }) 
-    // function setToken({ setToken = () => {} }) 
 
     async function handleSubmit(event){
         event.preventDefault();
@@ -62,4 +61,4 @@ function Login({onSetEmail, onSetToken}) {
     )
 }
 
-export default Login;
+export default Logon;
