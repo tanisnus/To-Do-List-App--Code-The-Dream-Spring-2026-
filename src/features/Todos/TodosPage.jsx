@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
+import SortBy from '../../shared/SortBy';
+import FilterInput from '../../shared/FilterInput';
+import useDebounce from '../../utils/useDebounce';
 
 function TodosPage({token}) {
 
@@ -9,6 +12,11 @@ function TodosPage({token}) {
 
     const [error, setError] = useState('');
     const [isTodoListLoading, setIsTodoListLoading] = useState(false);
+    const [sortBy, setSortBy] = useState('creationDate');
+    const [sortDirection, setSortDirection] = useState('desc');
+    const [filterTerm, setFilterTerm] = useState('');
+    const debouncedFilterTerm = useDebounce(filterTerm, 300);
+
 
     useEffect(() => {
       // If the token is not set, don't fetch the todos
@@ -17,12 +25,23 @@ function TodosPage({token}) {
       }
 
       async function fetchTodos() {
+        const paramsObject = {
+          sortBy,
+          sortDirection,
+        };
+
+        if (debouncedFilterTerm) {
+          paramsObject.find = debouncedFilterTerm;
+        }
+
+        const params = new URLSearchParams(paramsObject);
+
         try {
           setIsTodoListLoading(true);
           setError('');
 
           // Call the API
-          const response = await fetch('/api/tasks', {
+          const response = await fetch(`/api/tasks?${params}`, {
             headers: { 'X-CSRF-TOKEN': token },
             credentials: 'include',
           });
@@ -46,7 +65,7 @@ function TodosPage({token}) {
       }
 
       fetchTodos();
-    }, [token]);
+    }, [token, sortBy, sortDirection, debouncedFilterTerm]);
   
     // This is a callback function that is passed to the TodoForm component
     // This callback function updates the todoList state 
@@ -185,6 +204,10 @@ function TodosPage({token}) {
       }
     }
 
+    const handleFilterChange = (newTerm) => {
+      setFilterTerm(newTerm);
+    }
+
   return (
     <div>
       {isTodoListLoading && <p>Loading todos...</p>}
@@ -196,6 +219,13 @@ function TodosPage({token}) {
           </button>
         </section>
       )}
+      <SortBy
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        onSortByChange={(event) => setSortBy(event.target.value)}
+        onSortDirectionChange={(event) => setSortDirection(event.target.value)}
+      />
+      <FilterInput filterTerm={filterTerm} onFilterChange={handleFilterChange} />
       <TodoForm onAddTodo={addTodo} />
       <TodoList todoList={todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo}/>
     </div>
