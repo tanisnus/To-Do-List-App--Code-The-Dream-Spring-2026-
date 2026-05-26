@@ -18,6 +18,7 @@ function TodosPage({token}) {
     const [filterTerm, setFilterTerm] = useState('');
     const debouncedFilterTerm = useDebounce(filterTerm, 300);
     const [dataVersion, setDataVersion] = useState(0);
+    const [filterError, setFilterError] = useState('');
 
 
     useEffect(() => {
@@ -59,8 +60,13 @@ function TodosPage({token}) {
 
           const data = await response.json();
           setTodoList(data.tasks);
+          setFilterError('');
         } catch (error) {
-          setError(error.message);
+          if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
+            setFilterError(`Error filtering/sorting todos: ${error.message}`);
+          } else {
+            setError(`Error fetching todos: ${error.message}`);
+          }
         } finally {
           setIsTodoListLoading(false);
         }
@@ -214,12 +220,18 @@ function TodosPage({token}) {
 
     const handleFilterChange = (newTerm) => {
       setFilterTerm(newTerm);
-    }
+    };
 
+    const handleResetFilters = () => {
+      setFilterTerm('');
+      setSortBy('creationDate');
+      setSortDirection('desc');
+      setFilterError('');
+    };
 
     const invalidateCache = useCallback(() => {
       setDataVersion(prev => prev + 1);
-      console.log('Invalidating memo cache after todo mutation');
+      // console.log('Invalidating memo cache after todo mutation');
     }, []);
 
   return (
@@ -232,6 +244,17 @@ function TodosPage({token}) {
             Clear Error
           </button>
         </section>
+      )}
+      {filterError && (
+        <div>
+          <p>{filterError}</p>
+          <button type="button" onClick={() => setFilterError('')}>
+            Clear Filter Error
+          </button>
+          <button type="button" onClick={handleResetFilters}>
+            Reset Filters
+          </button>
+        </div>
       )}
       <SortBy
         sortBy={sortBy}
@@ -248,7 +271,7 @@ function TodosPage({token}) {
         dataVersion={dataVersion}
       />
     </div>
-  )
+  );
 }
 
 export default TodosPage;
