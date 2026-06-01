@@ -1,16 +1,25 @@
 import TodoListItem from '../../features/TodoList/TodoListItem';
+import { useMemo } from 'react';
 
-function TodoList({ todoList, onCompleteTodo, onUpdateTodo }) {
+function TodoList({ todoList, onCompleteTodo, onUpdateTodo, dataVersion }) {
 
-  // filter the todoList to only include todos that are not completed
-  const filteredTodoList = todoList.filter((todo) => !todo.isCompleted);
+
+  const filteredTodoList = useMemo(() => {
+    // console.log(`Recalculating filtered todos (v${dataVersion})`);
+
+    return {
+      version: dataVersion,
+      todos: todoList.filter((todo) => !todo.isCompleted),
+    };
+  }, [todoList, dataVersion]);
+
   return (
     <>
-      {filteredTodoList.length === 0 ? (
+      {filteredTodoList.todos.length === 0 ? (
         <p>Add todo above to get started</p>
       ) : (
         <ul>
-          {filteredTodoList.map((todo) => (
+          {filteredTodoList.todos.map((todo) => (
             <TodoListItem 
                 key={todo.id} 
                 todo={todo} 
