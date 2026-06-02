@@ -38,10 +38,11 @@ function TodosPage({token}) {
         }
 
         const params = new URLSearchParams(paramsObject);
-
+        
         try {
-          setIsTodoListLoading(true);
-          setError('');
+          dispatch({
+            type: TODO_ACTIONS.FETCH_START,
+          })
 
           // Call the API
           const response = await fetch(`/api/tasks?${params}`, {
@@ -61,6 +62,10 @@ function TodosPage({token}) {
           const data = await response.json();
           setTodoList(data.tasks);
           setFilterError('');
+          dispatch({
+            type: TODO_ACTIONS.FETCH_SUCCESS,
+            
+          })
         } catch (error) {
           if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
             setFilterError(`Error filtering/sorting todos: ${error.message}`);
@@ -79,13 +84,19 @@ function TodosPage({token}) {
     // This callback function updates the todoList state 
     const addTodo = async (todoTitle) => {
 
+      // Create a temporary id for the new todo
+      
       const tempId = Date.now();
       const todo = {
         id: tempId,
         title: todoTitle,
         isCompleted: false,
       };
-      setTodoList(previous => [todo, ...previous]);
+      dispatch({
+        type: TODO_ACTIONS.ADD_TODO_START,
+        payload: {newTodo: todo},
+
+      });
 
       try {
         const response = await fetch('/api/tasks', {
@@ -103,34 +114,33 @@ function TodosPage({token}) {
         }
 
         const data = await response.json();
-
-        // Go through every todo in the list.
-        // If this one's id matches the fake id → use the server's version.
-        // Otherwise → leave it alone.
-        setTodoList(previous =>
-          previous.map(item => (item.id === tempId ? data : item))
-        );
+        dispatch({
+          type: TODO_ACTIONS.ADD_TODO_SUCCESS,
+          payload: {
+            tempId,
+            newTodo: data,
+          },
+        });
         invalidateCache();
-
       } catch (error) {
-        setTodoList(previous => previous.filter(item => item.id !== tempId));
-        setError(error.message);
+        dispatch({
+          type: TODO_ACTIONS.ADD_TODO_ERROR,
+          payload: {
+            tempId,
+            message: error.message,
+          },
+        });
       }
     }
   
     
     const completeTodo = async (id) => {
-      const originalTodo = todoList.find(todo => todo.id === id);
 
-      if (!originalTodo) {
-        return;
-      }
-
-      setTodoList(previous =>
-        previous.map(todo =>
-          todo.id === id ? { ...todo, isCompleted: true } : todo
-        )
-      );
+      // Optimistic update by marking the todo as completed before the API call completes
+      dispatch({
+        type: TODO_ACTIONS.COMPLETE_TODO,
+        payload: { id },
+      });
 
       try {
         const response = await fetch(`/api/tasks/${id}`, {
@@ -148,23 +158,17 @@ function TodosPage({token}) {
         }
 
         const data = await response.json();
-        setTodoList(previous =>
-          // Go through every todo in the list.
-          // If this one's id matches the id of the todo we just completed → use the server's version.
-          // Otherwise → leave it alone.
-          previous.map(todo => (todo.id === id ? data : todo))
-        );
+        dispatch({
+          type: TODO_ACTIONS.COMPLETE_TODO_SUCCESS,
+          payload: { id: data.id, updatedTodo: data },
+        });
         invalidateCache();
 
       } catch (error) {
-        // Rollback the optimistic update
-        // Go through every todo in the list.
-        // If this one's id matches the id of the todo we just completed → use the original todo.
-        // Otherwise → leave it alone.
-        setTodoList(previous =>
-          previous.map(todo => (todo.id === id ? originalTodo : todo))
-        );
-        setError(error.message);
+        dispatch({
+          type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
+          payload: { id, message: error.message },
+        });
       }
     }
 
