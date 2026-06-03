@@ -43,6 +43,7 @@ export const initialTodoState = {
 
   // Reducer function
   export function todoReducer(state, action) {
+
     switch (action.type){
        
         case TODO_ACTIONS.FETCH_START:
@@ -56,13 +57,21 @@ export const initialTodoState = {
             return {
                 ...state,
                 isTodoListLoading: false,
-                todoList: action.payload,
+                todoList: action.payload.tasks,
+                filterError: '',
             };
         case TODO_ACTIONS.FETCH_ERROR:
+            if (action.payload.isFilterError) {
+                return {
+                    ...state,
+                    isTodoListLoading: false,
+                    filterError: action.payload.message,
+                };
+            }
             return {
                 ...state,
                 isTodoListLoading: false,
-                error: action.payload,
+                error: action.payload.message,
             };
         case TODO_ACTIONS.ADD_TODO_START:
             return {
