@@ -17,15 +17,6 @@ export function AuthProvider({ children }) {
     const [email, setEmail] = useState('');
     const [token, setToken] = useState('');
 
-    // Context value object
-    const value = {
-        email,
-        token,
-        isAuthenticated: !!token,
-        login,
-        logout,
-    };
-    
     // Functions will go here...
     const login = async (userEmail, password) => {
         try {
@@ -77,7 +68,7 @@ export function AuthProvider({ children }) {
                 setToken('');
                 return { success: true };
             } else {
-                return { success: false, error: `Failed to logout: ${data?.message}` };
+                return { success: false, error: `Failed to logout: ${res.status}` };
             }
         } catch (error) {
             return { success: false, error: `Network error during logout: ${error.message}` };
@@ -88,9 +79,14 @@ export function AuthProvider({ children }) {
         }
       };
 
-
-  
-  
+    // Context value object
+    const value = {
+      email,
+      token,
+      isAuthenticated: !!token,
+      login,
+      logout,
+    };
 
     return (
       <AuthContext.Provider value={value}>
