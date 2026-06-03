@@ -11,10 +11,16 @@ export const TODO_ACTIONS = {
     ADD_TODO_ERROR: 'ADD_TODO_ERROR',
 
 
+    // Complete Operations
     COMPLETE_TODO: 'COMPLETE_TODO',
     COMPLETE_TODO_SUCCESS: 'COMPLETE_TODO_SUCCESS',
     COMPLETE_TODO_ERROR: 'COMPLETE_TODO_ERROR',
+
+
+    // Update Operations
     UPDATE_TODO: 'UPDATE_TODO',
+    UPDATE_TODO_SUCCESS: 'UPDATE_TODO_SUCCESS',
+    UPDATE_TODO_ERROR: 'UPDATE_TODO_ERROR',
 
     // Filter Operations
     SET_SORT: 'SET_SORT',
@@ -29,8 +35,8 @@ export const initialTodoState = {
     error: '',
     filterError: '',
     isTodoListLoading: true,
-    sortBy: 'createdDate',
-    sortDirection: 'asc',
+    sortBy: 'createdAt',
+    sortDirection: 'desc',
     filterTerm: '',
     dataVersion: 0,
   };
@@ -78,21 +84,16 @@ export const initialTodoState = {
                 error: action.payload.message,
                 todoList: state.todoList.filter((todo) => todo.id !== action.payload.tempId),
                 dataVersion: state.dataVersion + 1,
-            }
+            };
+        // Optimistic Update
         case TODO_ACTIONS.COMPLETE_TODO:
             return {
                 ...state,
-                todoList: state.todoList.map((todo) => {
-                    if (todo.id === action.payload.id) {
-                        return {
-                            ...todo,
-                            isCompleted: true,
-                        }
-                    }
-                    return todo;
-                }),
+                todoList: state.todoList.map((todo) =>
+                  todo.id === action.payload.id ? { ...todo, isCompleted: true } : todo
+                ),
                 dataVersion: state.dataVersion + 1,
-            }
+              };
         case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
             return {
                 ...state,
@@ -100,7 +101,7 @@ export const initialTodoState = {
                     todo.id === action.payload.id ? action.payload.updatedTodo : todo
                 ),
                 dataVersion: state.dataVersion + 1,
-            }
+            };
         case TODO_ACTIONS.COMPLETE_TODO_ERROR:
             return {
                 ...state,
@@ -108,7 +109,63 @@ export const initialTodoState = {
                 todoList: state.todoList.map((todo) =>
                   todo.id === action.payload.id ? { ...todo, isCompleted: false } : todo
                 ),
+            };
+        case TODO_ACTIONS.UPDATE_TODO:
+            return {
+                ...state,
+                todoList: state.todoList.map((todo) =>
+                    todo.id === action.payload.id
+                      ? { ...todo, ...action.payload.updatedTodo }
+                      : todo
+                  ),
+                dataVersion: state.dataVersion + 1,
             }
+        case TODO_ACTIONS.UPDATE_TODO_SUCCESS:
+            return {
+                ...state,
+                todoList: state.todoList.map((todo) =>
+                    todo.id === action.payload.id 
+                    ? { ...todo, ...action.payload.updatedTodo } 
+                    : todo
+                ),
+                dataVersion: state.dataVersion + 1,
+            };
+        case TODO_ACTIONS.UPDATE_TODO_ERROR:
+            return {
+                ...state,
+                error: action.payload.message,
+                todoList: state.todoList.map((todo) =>
+                    todo.id === action.payload.originalTodo.id
+                    ? { ...action.payload.originalTodo }
+                    : todo
+                ),
+            };
+        case TODO_ACTIONS.SET_SORT:
+            return {
+                ...state,
+                sortBy: action.payload.sortBy,
+                sortDirection: action.payload.sortDirection,
+            };
+        case TODO_ACTIONS.SET_FILTER:
+            return {
+                ...state,
+                filterTerm: action.payload.filterTerm,
+            };
+        case TODO_ACTIONS.CLEAR_ERROR:
+            return {
+                ...state,
+                error: '',
+                filterError: '',
+            }
+        case TODO_ACTIONS.RESET_FILTERS:
+            return {
+                ...state,
+                filterTerm: '',
+                sortBy: 'createdAt',
+                sortDirection: 'desc',
+                filterError: '',
+            }
+        
         default:
             throw new Error(`Unknown action type: ${action.type}`);
 

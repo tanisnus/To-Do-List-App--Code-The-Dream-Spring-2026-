@@ -13,7 +13,7 @@ function TodosPage({token}) {
 
     const [error, setError] = useState('');
     const [isTodoListLoading, setIsTodoListLoading] = useState(false);
-    const [sortBy, setSortBy] = useState('creationDate');
+    const [sortBy, setSortBy] = useState('createdAt');
     const [sortDirection, setSortDirection] = useState('desc');
     const [filterTerm, setFilterTerm] = useState('');
     const debouncedFilterTerm = useDebounce(filterTerm, 300);
@@ -67,7 +67,7 @@ function TodosPage({token}) {
             
           })
         } catch (error) {
-          if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
+          if (debouncedFilterTerm || sortBy !== 'createdAt' || sortDirection !== 'desc') {
             setFilterError(`Error filtering/sorting todos: ${error.message}`);
           } else {
             setError(`Error fetching todos: ${error.message}`);
@@ -175,15 +175,11 @@ function TodosPage({token}) {
     const updateTodo = async (editedTodo) => {
       const originalTodo = todoList.find(todo => todo.id === editedTodo.id);
 
-      if (!originalTodo) {
-        return;
-      }
-
-      setTodoList(previous =>
-        previous.map(todo =>
-          todo.id === editedTodo.id ? { ...todo, ...editedTodo } : todo
-        )
-      );
+      
+      dispatch({
+        type: TODO_ACTIONS.UPDATE_TODO,
+        payload: { id: editedTodo.id, updatedTodo: editedTodo },
+      });
 
       try {
         const response = await fetch(`/api/tasks/${editedTodo.id}`, {
@@ -204,21 +200,17 @@ function TodosPage({token}) {
         }
 
         const data = await response.json();
-        setTodoList(previous =>
-          // Go through every todo in the list.
-          // If this one's id matches the id of the todo we just updated → use the server's version.
-          // Otherwise → leave it alone.
-          previous.map(todo => (todo.id === editedTodo.id ? data : todo))
-        );
+        dispatch({
+          type: TODO_ACTIONS.UPDATE_TODO_SUCCESS,
+          payload: { id: data.id, updatedTodo: data },
+        });
         invalidateCache();
 
       } catch (error) {
-        setTodoList(previous =>
-          previous.map(todo =>
-            todo.id === editedTodo.id ? originalTodo : todo
-          )
-        );
-        setError(error.message);
+        dispatch({
+          type: TODO_ACTIONS.UPDATE_TODO_ERROR,
+          payload: { originalTodo, message: error.message },
+        });
       }
     }
 
@@ -227,10 +219,20 @@ function TodosPage({token}) {
     };
 
     const handleResetFilters = () => {
-      setFilterTerm('');
-      setSortBy('creationDate');
-      setSortDirection('desc');
-      setFilterError('');
+      dispatch({
+        type: TODO_ACTIONS.SET_FILTER,
+        payload: { filterTerm: '' },
+      });
+      dispatch({
+        type: TODO_ACTIONS.RESET_FILTERS,
+      });
+      dispatch({
+        type: TODO_ACTIONS.SET_SORT,
+        payload: { sortBy: 'createdAt', sortDirection: 'desc' },
+      });
+      dispatch({
+        type: TODO_ACTIONS.CLEAR_ERROR,
+      });
     };
 
     const invalidateCache = useCallback(() => {
