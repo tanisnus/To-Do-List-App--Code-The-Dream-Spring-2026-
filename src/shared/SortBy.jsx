@@ -7,7 +7,7 @@ function SortBy({ sortBy, sortDirection, onSortByChange, onSortDirectionChange }
                 value={sortBy}
                 onChange={onSortByChange}
             >
-                <option value="creationDate">Creation Date</option>
+                <option value="createdAt">Creation Date</option>
                 <option value="title">Title</option>
             </select>
 
