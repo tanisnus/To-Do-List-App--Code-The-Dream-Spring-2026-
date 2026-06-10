@@ -1,32 +1,3 @@
-// import './App.css'
-
-// import { Routes, Route } from 'react-router'
-// import TodosPage from './pages/TodosPage'
-// import Header from './shared/Header'
-// import Logon from './features/Logon'
-// import Logoff from './features/Logoff'
-// import { useAuth } from './contexts/AuthContext'
-
-
-// function App() {
-//   const { isAuthenticated } = useAuth()
-
-//   return (
-//     <div>
-//       <Header />
-//       {isAuthenticated && <Logoff />}
-//       <Routes>
-//         <Route path="/" element={isAuthenticated ? <TodosPage /> : <Logon />} />
-//         <Route path="/login" element={<Logon />} />
-//         <Route path="/todos" element={isAuthenticated ? <TodosPage /> : <Logon />} />
-//       </Routes>
-//     </div>
-//   )
-// }
-
-// export default App
-
-
 import './App.css';
 import { Routes, Route } from 'react-router';
 import HomePage from './pages/HomePage';

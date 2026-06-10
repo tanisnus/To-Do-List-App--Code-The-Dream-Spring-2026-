@@ -17,7 +17,7 @@ function Logoff() {
         if (result.success) {
             navigate('/login');  // Added this navigation
           } else {
-            setError(result.error);
+            setLogoutError(result.error);
             setIsLoggingOff(false);
           }
     }

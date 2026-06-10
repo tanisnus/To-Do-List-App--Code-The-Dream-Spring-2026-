@@ -1,52 +1,58 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 function ProfilePage() {
-  const { email, token } = useAuth();
-  const [stats, setStats] = useState({ total: 0, completed: 0, active: 0 });
-  const [isLoading, setIsLoading] = useState(true);
+  const { email, token, isAuthenticated } = useAuth();
+  const [todoStats, setTodoStats] = useState({ total: 0, completed: 0, active: 0 });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-
     async function fetchTodoStats() {
-      setIsLoading(true);
-      setError('');
+      if (!token) return;
 
       try {
-        const response = await fetch('/api/tasks', {
+        setLoading(true);
+        setError('');
+
+        const options = {
+          method: 'GET',
           headers: { 'X-CSRF-TOKEN': token },
           credentials: 'include',
-        });
+        };
+
+        const response = await fetch('/api/tasks', options);
 
         if (response.status === 401) {
-          throw new Error('unauthorized');
+          throw new Error('Unauthorized');
         }
 
         if (!response.ok) {
-          throw new Error('Failed to fetch todo statistics');
+          throw new Error('Failed to fetch todos');
         }
 
         const data = await response.json();
-        const tasks = data.tasks ?? [];
+        const todos = data.tasks ?? [];
 
-        setStats({
-          total: tasks.length,
-          completed: tasks.filter((todo) => todo.isCompleted).length,
-          active: tasks.filter((todo) => !todo.isCompleted).length,
-        });
+        const total = todos.length;
+        const completed = todos.filter((todo) => todo.isCompleted).length;
+        const active = total - completed;
+
+        setTodoStats({ total, completed, active });
       } catch (err) {
-        setError(err.message);
+        setError(`Error loading statistics: ${err.message}`);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     }
 
     fetchTodoStats();
   }, [token]);
+
+  const completionPercentage =
+    todoStats.total > 0
+      ? Math.round((todoStats.completed / todoStats.total) * 100)
+      : null;
 
   return (
     <div>
@@ -55,18 +61,24 @@ function ProfilePage() {
       <section>
         <h2>User Information</h2>
         <p>Name: {email}</p>
+        <p>Status: {isAuthenticated ? 'Logged in' : 'Not logged in'}</p>
       </section>
 
       <section>
         <h2>Todo Statistics</h2>
-        {isLoading && <p>Loading statistics...</p>}
-        {error && <p>Error: {error}</p>}
-        {!isLoading && !error && (
-          <ul>
-            <li>Total todos: {stats.total}</li>
-            <li>Completed todos: {stats.completed}</li>
-            <li>Active todos: {stats.active}</li>
-          </ul>
+        {loading && <p>Loading statistics...</p>}
+        {error && <p>{error}</p>}
+        {!loading && !error && (
+          <>
+            <ul>
+              <li>Total todos: {todoStats.total}</li>
+              <li>Completed todos: {todoStats.completed}</li>
+              <li>Active todos: {todoStats.active}</li>
+            </ul>
+            {completionPercentage !== null && (
+              <p>Completion rate: {completionPercentage}%</p>
+            )}
+          </>
         )}
       </section>
     </div>
