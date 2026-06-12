@@ -1,17 +1,23 @@
 import { useEffect } from 'react';
 import { useReducer } from 'react';
-import TodoForm from './TodoForm';
-import TodoList from './TodoList';
-import SortBy from '../../shared/SortBy';
-import FilterInput from '../../shared/FilterInput';
-import useDebounce from '../../utils/useDebounce';
-import { todoReducer, initialTodoState, TODO_ACTIONS } from '../../reducers/todoReducer';
-import { useAuth } from '../../contexts/AuthContext';
+import TodoForm from '../features/Todos/TodoForm';
+import TodoList from '../features/Todos/TodoList';
+import SortBy from '../shared/SortBy';
+import FilterInput from '../shared/FilterInput';
+import useDebounce from '../utils/useDebounce';
+import { todoReducer, initialTodoState, TODO_ACTIONS } from '../reducers/todoReducer';
+import { useAuth } from '../contexts/AuthContext';
+import { useSearchParams } from 'react-router';
+import StatusFilter from '../shared/StatusFilter';
 
 function TodosPage() {
     const { token } = useAuth();
-
     const [state, dispatch] = useReducer(todoReducer, initialTodoState);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Get status filter from URL, default to 'all'
+    const statusFilter = searchParams.get('status') || 'all';  
+
     const { 
         todoList, 
         error, 
@@ -255,6 +261,7 @@ function TodosPage() {
         onSortByChange={(event) => dispatch({ type: TODO_ACTIONS.SET_SORT, payload: { sortBy: event.target.value, sortDirection } })}
         onSortDirectionChange={(event) => dispatch({ type: TODO_ACTIONS.SET_SORT, payload: { sortBy, sortDirection: event.target.value } })}
       />
+      <StatusFilter />  
       <FilterInput filterTerm={filterTerm} onFilterChange={(value) => dispatch({ type: TODO_ACTIONS.SET_FILTER, payload: { filterTerm: value } })} />
       <TodoForm onAddTodo={addTodo} />
       <TodoList
@@ -262,6 +269,7 @@ function TodosPage() {
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
         dataVersion={dataVersion}
+        statusFilter={statusFilter}
       />
     </div>
   );
