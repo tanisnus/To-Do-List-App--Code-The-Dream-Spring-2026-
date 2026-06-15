@@ -3,10 +3,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
 
 function Logoff() {
-    const { logout } = useAuth();
+    const { logout, email } = useAuth();
     const [logoutError, setLogoutError] = useState('');
     const [isLoggingOff, setIsLoggingOff] = useState(false);
-    const navigate = useNavigate();  // Added this navigation hook
+    const navigate = useNavigate();
 
     async function handleLogout() {
         setIsLoggingOff(true);
@@ -15,19 +15,32 @@ function Logoff() {
         const result = await logout();
 
         if (result.success) {
-            navigate('/login');  // Added this navigation
-          } else {
+            navigate('/login');
+        } else {
             setLogoutError(result.error);
             setIsLoggingOff(false);
-          }
+        }
     }
 
+    const initials = email ? email.charAt(0).toUpperCase() : '?';
+
     return (
-        <div>
-            {logoutError && <p>{logoutError}</p>}
-            <button type="button" onClick={handleLogout} disabled={isLoggingOff}>
+        <div className="flex items-center gap-3">
+            {logoutError && <p className="text-sm text-red-600">{logoutError}</p>}
+            <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoggingOff}
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 bg-transparent border-0 cursor-pointer disabled:opacity-50"
+            >
                 {isLoggingOff ? 'Logging out...' : 'Log Out'}
             </button>
+            <div
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-200 text-sm font-medium text-[#4F46E5]"
+                aria-hidden="true"
+            >
+                {initials}
+            </div>
         </div>
     );
 }

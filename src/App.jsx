@@ -12,6 +12,7 @@ import Header from './shared/Header';
 function App() {
   return (
     <>
+    
       <Header />
       <Routes>
         <Route path='/' element={<HomePage />} />

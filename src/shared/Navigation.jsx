@@ -1,40 +1,41 @@
 import { NavLink } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
-function navLinkStyle({ isActive }) {
-  return {
-    fontWeight: isActive ? 'bold' : 'normal',
-    textDecoration: isActive ? 'underline' : 'none',
-  };
+function navLinkClass({ isActive }) {
+  const base = 'pb-1 text-sm font-medium transition-colors';
+  const active = 'text-[#4F46E5] font-bold border-b-2 border-[#4F46E5]';
+  const inactive = 'text-gray-600 hover:text-gray-900';
+
+  return `${base} ${isActive ? active : inactive}`;
 }
 
 function Navigation() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav>
-      <ul style={{ listStyle: 'none', display: 'flex', gap: '1rem', padding: 0 }}>
+    <nav className="flex justify-center">
+      <ul className="flex list-none gap-8 p-0 m-0">
         <li>
-          <NavLink to="/about" style={navLinkStyle}>
+          <NavLink to="/about" className={navLinkClass}>
             About
           </NavLink>
         </li>
         {isAuthenticated ? (
           <>
             <li>
-              <NavLink to="/todos" style={navLinkStyle}>
+              <NavLink to="/todos" className={navLinkClass}>
                 Todos
               </NavLink>
             </li>
             <li>
-              <NavLink to="/profile" style={navLinkStyle}>
+              <NavLink to="/profile" className={navLinkClass}>
                 Profile
               </NavLink>
             </li>
           </>
         ) : (
           <li>
-            <NavLink to="/login" style={navLinkStyle}>
+            <NavLink to="/login" className={navLinkClass}>
               Login
             </NavLink>
           </li>
