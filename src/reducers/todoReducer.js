@@ -99,7 +99,9 @@ export const initialTodoState = {
             return {
                 ...state,
                 todoList: state.todoList.map((todo) =>
-                  todo.id === action.payload.id ? { ...todo, isCompleted: true } : todo
+                  todo.id === action.payload.id
+                    ? { ...todo, isCompleted: action.payload.isCompleted }
+                    : todo
                 ),
                 dataVersion: state.dataVersion + 1,
               };
@@ -116,7 +118,9 @@ export const initialTodoState = {
                 ...state,
                 error: action.payload.message,
                 todoList: state.todoList.map((todo) =>
-                  todo.id === action.payload.id ? { ...todo, isCompleted: false } : todo
+                  todo.id === action.payload.id
+                    ? { ...todo, isCompleted: action.payload.isCompleted }
+                    : todo
                 ),
             };
         case TODO_ACTIONS.UPDATE_TODO:

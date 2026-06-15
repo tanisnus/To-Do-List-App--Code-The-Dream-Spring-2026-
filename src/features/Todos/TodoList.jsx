@@ -1,9 +1,7 @@
 import TodoListItem from '../../features/TodoList/TodoListItem';
 import { useMemo } from 'react';
 
-function TodoList({ todoList, onCompleteTodo, onUpdateTodo, dataVersion, statusFilter }) {
-
-
+function TodoList({ todoList, onToggleTodoComplete, onUpdateTodo, dataVersion, statusFilter }) {
   const filteredTodoList = useMemo(() => {
     let filteredTodos;
     switch (statusFilter) {
@@ -25,7 +23,6 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, dataVersion, statusF
     };
   }, [todoList, dataVersion, statusFilter]);
 
-
   const getEmptyMessage = () => {
     switch (statusFilter) {
       case 'completed':
@@ -34,22 +31,22 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, dataVersion, statusF
         return 'No active todos. Add a todo above to get started.';
       case 'all':
       default:
-        return 'Add todo above to get started.';
+        return 'Add a todo above to get started.';
     }
   };
 
   return (
     <>
       {filteredTodoList.todos.length === 0 ? (
-        <p>{getEmptyMessage()}</p>
+        <p className="text-center text-sm text-gray-500 py-8">{getEmptyMessage()}</p>
       ) : (
-        <ul>
+        <ul className="space-y-3">
           {filteredTodoList.todos.map((todo) => (
-            <TodoListItem 
-                key={todo.id} 
-                todo={todo} 
-                onCompleteTodo={onCompleteTodo}
-                onUpdateTodo={onUpdateTodo}
+            <TodoListItem
+              key={todo.id}
+              todo={todo}
+              onToggleTodoComplete={onToggleTodoComplete}
+              onUpdateTodo={onUpdateTodo}
             />
           ))}
         </ul>
@@ -59,5 +56,3 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, dataVersion, statusF
 }
 
 export default TodoList;
-
-

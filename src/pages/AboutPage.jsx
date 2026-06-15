@@ -2,7 +2,7 @@ function AboutPage() {
     return (
         <div>
             {/* ── Section 1: Hero ── */}
-            <section className="flex flex-col items-center px-8 py-16 bg-indigo-50 text-center">
+            <section className="flex flex-col items-center px-8 py-16 bg-indigo-100 text-center">
                 <span className="flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-medium text-indigo-900">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="10" />

@@ -154,12 +154,16 @@ function TodosPage() {
     }
   
     
-    const completeTodo = async (id) => {
+    const toggleTodoComplete = async (id) => {
+      const todo = todoList.find((item) => item.id === id);
+      if (!todo) return;
 
-      // Optimistic update by marking the todo as completed before the API call completes
+      const previousIsCompleted = todo.isCompleted;
+      const isCompleted = !previousIsCompleted;
+
       dispatch({
         type: TODO_ACTIONS.COMPLETE_TODO,
-        payload: { id },
+        payload: { id, isCompleted },
       });
 
       try {
@@ -170,11 +174,11 @@ function TodosPage() {
             'X-CSRF-TOKEN': token,
           },
           credentials: 'include',
-          body: JSON.stringify({ isCompleted: true }),
+          body: JSON.stringify({ isCompleted }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to complete todo');
+          throw new Error('Failed to update todo');
         }
 
         const data = await response.json();
@@ -186,7 +190,7 @@ function TodosPage() {
       } catch (error) {
         dispatch({
           type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
-          payload: { id, message: error.message },
+          payload: { id, isCompleted: previousIsCompleted, message: error.message },
         });
       }
     }
@@ -234,43 +238,75 @@ function TodosPage() {
 
 
   return (
-    <div>
-      {isTodoListLoading && <p>Loading todos...</p>}
-      {error && (
-        <section>
-          <p>{error}</p>
-          <button type="button" onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}>
-            Clear Error
-          </button>
-        </section>
-      )}
-      {filterError && (
-        <div>
-          <p>{filterError}</p>
-          <button type="button" onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}>
-            Clear Filter Error
-          </button>
-          <button type="button" onClick={() => dispatch({ type: TODO_ACTIONS.RESET_FILTERS })}>
-            Reset Filters
-          </button>
+    <div className="bg-gray-50 px-6 py-8 min-h-[calc(100vh-4rem)]">
+      <div className="mx-auto max-w-3xl">
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">Workspace</h1>
+          <FilterInput
+            filterTerm={filterTerm}
+            onFilterChange={(value) => dispatch({ type: TODO_ACTIONS.SET_FILTER, payload: { filterTerm: value } })}
+          />
         </div>
-      )}
-      <SortBy
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSortByChange={(event) => dispatch({ type: TODO_ACTIONS.SET_SORT, payload: { sortBy: event.target.value, sortDirection } })}
-        onSortDirectionChange={(event) => dispatch({ type: TODO_ACTIONS.SET_SORT, payload: { sortBy, sortDirection: event.target.value } })}
-      />
-      <StatusFilter />  
-      <FilterInput filterTerm={filterTerm} onFilterChange={(value) => dispatch({ type: TODO_ACTIONS.SET_FILTER, payload: { filterTerm: value } })} />
-      <TodoForm onAddTodo={addTodo} />
-      <TodoList
-        todoList={todoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        dataVersion={dataVersion}
-        statusFilter={statusFilter}
-      />
+
+        {isTodoListLoading && <p className="mt-4 text-sm text-gray-500">Loading todos...</p>}
+        {error && (
+          <section className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600">
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}
+              className="mt-2 text-red-700 underline"
+            >
+              Clear Error
+            </button>
+          </section>
+        )}
+        {filterError && (
+          <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600">
+            <p>{filterError}</p>
+            <div className="mt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}
+                className="text-red-700 underline"
+              >
+                Clear Filter Error
+              </button>
+              <button
+                type="button"
+                onClick={() => dispatch({ type: TODO_ACTIONS.RESET_FILTERS })}
+                className="text-red-700 underline"
+              >
+                Reset Filters
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <TodoForm onAddTodo={addTodo} />
+
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <StatusFilter />
+            <SortBy
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSortByChange={(event) => dispatch({ type: TODO_ACTIONS.SET_SORT, payload: { sortBy: event.target.value, sortDirection } })}
+              onSortDirectionChange={(event) => dispatch({ type: TODO_ACTIONS.SET_SORT, payload: { sortBy, sortDirection: event.target.value } })}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <TodoList
+            todoList={todoList}
+            onToggleTodoComplete={toggleTodoComplete}
+            onUpdateTodo={updateTodo}
+            dataVersion={dataVersion}
+            statusFilter={statusFilter}
+          />
+        </div>
+      </div>
     </div>
   );
 }

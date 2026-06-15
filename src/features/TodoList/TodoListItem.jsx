@@ -1,61 +1,62 @@
-import { useState } from 'react';
-import TextInputWithLabel from '../../shared/TextInputWithLabel';
-import { isValidTodoTitle } from '../../utils/todoValidation';
 import { useEditableTitle } from '../../hooks/useEditableTitle';
+import { isValidTodoTitle } from '../../utils/todoValidation';
 
-export default function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
+export default function TodoListItem({ todo, onToggleTodoComplete, onUpdateTodo }) {
   const { isEditing, workingTitle, startEditing, cancelEdit, updateTitle, finishEdit } = useEditableTitle(todo.title);
 
-  const handleCancel = () => {
-    cancelEdit();
-  }
-
-  const handleEdit = (e) => {
-    updateTitle(e.target.value);
-
-  }
-
   const handleUpdate = (e) => {
-    if (isEditing === false) {
-      return
-    }
+    if (!isEditing) return;
 
-    e.preventDefault()
-    onUpdateTodo({...todo, title: workingTitle})
-    finishEdit()
-  }
+    e.preventDefault();
+    onUpdateTodo({ ...todo, title: workingTitle });
+    finishEdit();
+  };
 
   return (
-    <li>
-      <form onSubmit={handleUpdate}>
+    <li className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+      <form onSubmit={handleUpdate} className="flex items-center gap-3">
         {isEditing ? (
-            <>
-                <TextInputWithLabel value={workingTitle} onChange={handleEdit} />
-
-                {/* Cancle Button */}
-                <button type="button" onClick={handleCancel}>Cancel</button>
-
-                {/* Update Button */}
-                <button 
-                  type="button" 
-                  onClick={handleUpdate}
-                  disabled={!isValidTodoTitle(workingTitle)}
-                  > Update 
-                </button>
-            </>
-         
+          <>
+            <input
+              type="text"
+              value={workingTitle}
+              onChange={(e) => updateTitle(e.target.value)}
+              className="flex-1 rounded-lg border border-indigo-200 px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
+            />
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!isValidTodoTitle(workingTitle)}
+              className="rounded-lg bg-[#4F46E5] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+            >
+              Update
+            </button>
+          </>
         ) : (
           <>
-            <label>
-              {/* Checkbox */}
-              <input
-                type="checkbox"
-                id={`checkbox${todo.id}`}
-                checked={todo.isCompleted}
-                onChange={() => onCompleteTodo(todo.id)}
-              />
-            </label>
-            <span onClick={() => startEditing()}>{todo.title}</span>
+            <input
+              type="checkbox"
+              id={`checkbox${todo.id}`}
+              checked={todo.isCompleted}
+              onChange={() => onToggleTodoComplete(todo.id)}
+              className="h-5 w-5 shrink-0 rounded border-gray-300 text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
+            />
+            <span
+              onClick={() => !todo.isCompleted && startEditing()}
+              className={`flex-1 text-sm ${
+                todo.isCompleted
+                  ? 'text-gray-400 line-through cursor-default'
+                  : 'text-gray-800 cursor-pointer'
+              }`}
+            >
+              {todo.title}
+            </span>
           </>
         )}
       </form>
