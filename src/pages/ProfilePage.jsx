@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { ERROR_MESSAGES } from '../utils/errorMessages';
+import { sanitizeInput } from '../utils/sanitize';
+import UserAvatar from '../shared/UserAvatar';
+import ErrorMessage from '../shared/ErrorMessage';
 
 function ProfilePage() {
   const { email, token, isAuthenticated } = useAuth();
@@ -39,8 +43,8 @@ function ProfilePage() {
         const active = total - completed;
 
         setTodoStats({ total, completed, active });
-      } catch (err) {
-        setError(`Error loading statistics: ${err.message}`);
+      } catch {
+        setError(ERROR_MESSAGES.loadStats);
       } finally {
         setLoading(false);
       }
@@ -52,35 +56,123 @@ function ProfilePage() {
   const completionPercentage =
     todoStats.total > 0
       ? Math.round((todoStats.completed / todoStats.total) * 100)
-      : null;
+      : 0;
+
+  const displayName = sanitizeInput(email) || 'User';
+  const lastActivity = new Date().toLocaleString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
 
   return (
-    <div>
-      <h1>Profile</h1>
+    <div className="bg-gray-50 px-6 py-10 min-h-[calc(100vh-4rem)]">
+      <div className="mx-auto max-w-2xl">
+        <div className="flex flex-col items-center text-center">
+          <UserAvatar name={email} size="lg" showOnlineStatus={isAuthenticated} />
 
-      <section>
-        <h2>User Information</h2>
-        <p>Name: {email}</p>
-        <p>Status: {isAuthenticated ? 'Logged in' : 'Not logged in'}</p>
-      </section>
+          <h1 className="mt-4 text-2xl font-bold text-gray-900">{displayName}</h1>
 
-      <section>
-        <h2>Todo Statistics</h2>
-        {loading && <p>Loading statistics...</p>}
-        {error && <p>{error}</p>}
-        {!loading && !error && (
-          <>
-            <ul>
-              <li>Total todos: {todoStats.total}</li>
-              <li>Completed todos: {todoStats.completed}</li>
-              <li>Active todos: {todoStats.active}</li>
-            </ul>
-            {completionPercentage !== null && (
-              <p>Completion rate: {completionPercentage}%</p>
-            )}
-          </>
-        )}
-      </section>
+          {isAuthenticated && (
+            <span className="mt-2 flex items-center gap-1.5 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              Logged in
+            </span>
+          )}
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 border-b border-gray-100 pb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-[#4F46E5]">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <h2 className="font-bold text-gray-900">User Information</h2>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Email Address</p>
+              <p className="mt-1 font-semibold text-gray-900">{displayName}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Workspace Role</p>
+              <p className="mt-1 font-semibold text-gray-900">Member</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Last Activity</p>
+              <p className="mt-1 font-semibold text-gray-900">Today, {lastActivity}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Account Status</p>
+              <p className="mt-1 font-semibold text-gray-900">
+                {isAuthenticated ? 'Active' : 'Not logged in'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-[#4F46E5]">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 20V10M12 20V4M6 20v-6" />
+                </svg>
+              </div>
+              <h2 className="font-bold text-gray-900">Todo Statistics</h2>
+            </div>
+            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500">
+              Last 30 Days
+            </span>
+          </div>
+
+          {loading && <p className="mt-6 text-sm text-gray-500">Loading statistics...</p>}
+          <ErrorMessage message={error} className="mt-6" />
+
+          {!loading && !error && (
+            <>
+              <div className="mt-6">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                      Completion Rate
+                    </p>
+                    <p className="mt-1 text-4xl font-bold text-[#4F46E5]">{completionPercentage}%</p>
+                  </div>
+                  <p className="text-sm text-gray-400">Target: 85%</p>
+                </div>
+
+                <div className="mt-4 h-3 w-full rounded-full bg-indigo-100">
+                  <div
+                    className="h-3 rounded-full bg-[#4F46E5] transition-all"
+                    style={{ width: `${completionPercentage}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 gap-4">
+                <div className="rounded-xl bg-indigo-50 p-4 text-center">
+                  <p className="text-sm text-gray-500">Total</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900">{todoStats.total}</p>
+                </div>
+                <div className="rounded-xl bg-indigo-50 p-4 text-center">
+                  <p className="text-sm text-green-600">Completed</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900">{todoStats.completed}</p>
+                </div>
+                <div className="rounded-xl bg-indigo-50 p-4 text-center">
+                  <p className="text-sm text-[#4F46E5]">Active</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900">{todoStats.active}</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

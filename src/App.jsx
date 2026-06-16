@@ -1,4 +1,3 @@
-import './App.css';
 import { Routes, Route } from 'react-router';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -14,11 +13,11 @@ function App() {
     <>
       <Header />
       <Routes>
-        <Route path='/' element={<HomePage />} />
-        <Route path='/about' element={<AboutPage />} />
-        <Route path='/login' element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route
-          path='/todos'
+          path="/todos"
           element={
             <RequireAuth>
               <TodosPage />
@@ -26,14 +25,14 @@ function App() {
           }
         />
         <Route
-          path='/profile'
+          path="/profile"
           element={
             <RequireAuth>
               <ProfilePage />
             </RequireAuth>
           }
         />
-        <Route path='*' element={<NotFoundPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

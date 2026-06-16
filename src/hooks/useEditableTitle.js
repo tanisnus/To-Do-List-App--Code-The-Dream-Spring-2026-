@@ -1,4 +1,3 @@
-// src/hooks/useEditableTitle.js
 import { useState } from 'react';
 
 export function useEditableTitle(initialTitle) {
@@ -30,6 +29,6 @@ export function useEditableTitle(initialTitle) {
     startEditing,
     cancelEdit,
     updateTitle,
-    finishEdit
+    finishEdit,
   };
 }
