@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  getEmailError,
+  getPasswordError,
+  MAX_EMAIL_LENGTH,
+  MAX_PASSWORD_LENGTH,
+} from '../utils/todoValidation';
+import { sanitizeInput } from '../utils/sanitize';
 
 function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -23,10 +30,29 @@ function LoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setIsLoggingOn(true);
     setAuthError('');
 
-    const result = await login(email, password);
+    const emailError = getEmailError(email);
+    if (emailError) {
+      setAuthError(emailError);
+      return;
+    }
+
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      setAuthError(passwordError);
+      return;
+    }
+
+    const cleanEmail = sanitizeInput(email);
+    if (!cleanEmail) {
+      setAuthError('Email contains invalid characters.');
+      return;
+    }
+
+    setIsLoggingOn(true);
+
+    const result = await login(cleanEmail, password);
 
     if (!result.success) {
       setAuthError(result.error);
@@ -66,6 +92,7 @@ function LoginPage() {
                 id="email"
                 type="email"
                 value={email}
+                maxLength={MAX_EMAIL_LENGTH}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="name@company.com"
                 required
@@ -89,6 +116,7 @@ function LoginPage() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
+                maxLength={MAX_PASSWORD_LENGTH}
                 onChange={(event) => setPassword(event.target.value)}
                 required
                 className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"

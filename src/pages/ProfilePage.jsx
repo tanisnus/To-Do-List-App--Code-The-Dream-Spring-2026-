@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { ERROR_MESSAGES } from '../utils/errorMessages';
+import { sanitizeInput } from '../utils/sanitize';
 
 function ProfilePage() {
   const { email, token, isAuthenticated } = useAuth();
@@ -39,8 +41,8 @@ function ProfilePage() {
         const active = total - completed;
 
         setTodoStats({ total, completed, active });
-      } catch (err) {
-        setError(`Error loading statistics: ${err.message}`);
+      } catch {
+        setError(ERROR_MESSAGES.loadStats);
       } finally {
         setLoading(false);
       }
@@ -54,7 +56,7 @@ function ProfilePage() {
       ? Math.round((todoStats.completed / todoStats.total) * 100)
       : 0;
 
-  const displayName = email || 'User';
+  const displayName = sanitizeInput(email) || 'User';
   const initials = displayName.charAt(0).toUpperCase();
   const lastActivity = new Date().toLocaleString('en-US', {
     hour: 'numeric',

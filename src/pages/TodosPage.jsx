@@ -9,6 +9,7 @@ import { todoReducer, initialTodoState, TODO_ACTIONS } from '../reducers/todoRed
 import { useAuth } from '../contexts/AuthContext';
 import { useSearchParams } from 'react-router';
 import StatusFilter from '../shared/StatusFilter';
+import { ERROR_MESSAGES } from '../utils/errorMessages';
 
 function TodosPage() {
     const { token } = useAuth();
@@ -77,12 +78,12 @@ function TodosPage() {
             type: TODO_ACTIONS.FETCH_SUCCESS,
             payload: { tasks: data.tasks },
           })
-        } catch (error) {
+        } catch {
           if (debouncedFilterTerm || sortBy !== 'createdAt' || sortDirection !== 'desc') {
               dispatch({
                 type: TODO_ACTIONS.FETCH_ERROR,
                 payload: {
-                  message: `Error filtering/sorting todos: ${error.message}`,
+                  message: ERROR_MESSAGES.filterTodos,
                   isFilterError: true,
                 },
               });
@@ -90,7 +91,7 @@ function TodosPage() {
               dispatch({
                 type: TODO_ACTIONS.FETCH_ERROR,
                 payload: {
-                  message: `Error fetching todos: ${error.message}`,
+                  message: ERROR_MESSAGES.loadTodos,
                   isFilterError: false,
                 },
               });
@@ -142,12 +143,12 @@ function TodosPage() {
             newTodo: data,
           },
         });
-      } catch (error) {
+      } catch {
         dispatch({
           type: TODO_ACTIONS.ADD_TODO_ERROR,
           payload: {
             tempId,
-            message: error.message,
+            message: ERROR_MESSAGES.addTodo,
           },
         });
       }
@@ -187,10 +188,10 @@ function TodosPage() {
           payload: { id: data.id, updatedTodo: data },
         });
 
-      } catch (error) {
+      } catch {
         dispatch({
           type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
-          payload: { id, isCompleted: previousIsCompleted, message: error.message },
+          payload: { id, isCompleted: previousIsCompleted, message: ERROR_MESSAGES.updateTodo },
         });
       }
     }
@@ -228,10 +229,10 @@ function TodosPage() {
           payload: { id: data.id, updatedTodo: data },
         });
 
-      } catch (error) {
+      } catch {
         dispatch({
           type: TODO_ACTIONS.UPDATE_TODO_ERROR,
-          payload: { originalTodo, message: error.message },
+          payload: { originalTodo, message: ERROR_MESSAGES.updateTodo },
         });
       }
     }

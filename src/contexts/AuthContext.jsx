@@ -36,16 +36,15 @@ export function AuthProvider({ children }) {
             setToken(data.csrfToken);
             return { success: true };
           } else {
-            // Failure: Return error
             return {
               success: false,
-              error: `Authentication failed: ${data?.message}`,
+              error: 'Login failed. Check your email and password.',
             };
           }
-        } catch (error) {
+        } catch {
           return {
             success: false,
-            error: 'Network error during login',
+            error: 'Unable to log in. Please try again.',
           };
         }
       };
@@ -68,10 +67,10 @@ export function AuthProvider({ children }) {
                 setToken('');
                 return { success: true };
             } else {
-                return { success: false, error: `Failed to logout: ${res.status}` };
+                return { success: false, error: 'Unable to log out. Please try again.' };
             }
-        } catch (error) {
-            return { success: false, error: `Network error during logout: ${error.message}` };
+        } catch {
+            return { success: false, error: 'Unable to log out. Please try again.' };
         }
         finally {
             setEmail('');
