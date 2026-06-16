@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { ERROR_MESSAGES } from '../utils/errorMessages';
 import { sanitizeInput } from '../utils/sanitize';
+import UserAvatar from '../shared/UserAvatar';
+import ErrorMessage from '../shared/ErrorMessage';
 
 function ProfilePage() {
   const { email, token, isAuthenticated } = useAuth();
@@ -57,7 +59,6 @@ function ProfilePage() {
       : 0;
 
   const displayName = sanitizeInput(email) || 'User';
-  const initials = displayName.charAt(0).toUpperCase();
   const lastActivity = new Date().toLocaleString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
@@ -67,16 +68,8 @@ function ProfilePage() {
   return (
     <div className="bg-gray-50 px-6 py-10 min-h-[calc(100vh-4rem)]">
       <div className="mx-auto max-w-2xl">
-        {/* Profile header */}
         <div className="flex flex-col items-center text-center">
-          <div className="relative">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-indigo-100 text-3xl font-bold text-[#4F46E5]">
-              {initials}
-            </div>
-            {isAuthenticated && (
-              <span className="absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-white bg-green-500" />
-            )}
-          </div>
+          <UserAvatar name={email} size="lg" showOnlineStatus={isAuthenticated} />
 
           <h1 className="mt-4 text-2xl font-bold text-gray-900">{displayName}</h1>
 
@@ -90,7 +83,6 @@ function ProfilePage() {
           )}
         </div>
 
-        {/* User Information card */}
         <div className="mt-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 border-b border-gray-100 pb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-[#4F46E5]">
@@ -124,7 +116,6 @@ function ProfilePage() {
           </div>
         </div>
 
-        {/* Todo Statistics card */}
         <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
             <div className="flex items-center gap-2">
@@ -141,7 +132,7 @@ function ProfilePage() {
           </div>
 
           {loading && <p className="mt-6 text-sm text-gray-500">Loading statistics...</p>}
-          {error && <p className="mt-6 text-sm text-red-600">{error}</p>}
+          <ErrorMessage message={error} className="mt-6" />
 
           {!loading && !error && (
             <>
