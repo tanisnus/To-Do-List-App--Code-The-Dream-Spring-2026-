@@ -4,7 +4,6 @@ A modern, full-featured todo list application built for **Code The Dream Spring 
 
 ## Live Demo
 https://to-do-list-app-code-the-dream-sprin.vercel.app/login
-**Live Demo:** 
 
 ## Short Video Demonstration of the App
 https://www.youtube.com/watch?v=p9HoA5YFets
@@ -41,15 +40,12 @@ https://www.youtube.com/watch?v=p9HoA5YFets
 
 ### Desktop
 
-<!-- TODO: Add your desktop screenshot path below, e.g. docs/screenshots/desktop.png -->
 ![Desktop view]( )
 
 ### Mobile
 
-<!-- TODO: Add your mobile screenshot path below, e.g. docs/screenshots/mobile.png -->
 ![Mobile view]( )
 
-## Getting Started
 
 ### Prerequisites
 
@@ -62,7 +58,7 @@ https://www.youtube.com/watch?v=p9HoA5YFets
 1. Clone the repository:
 
    ```bash
-   git clone 
+   git clone https://github.com/tanisnus/To-Do-List-App--Code-The-Dream-Spring-2026-.git
    cd To-Do-List-App--Code-The-Dream-Spring-2026-
    ```
 
@@ -150,9 +146,9 @@ SOFTWARE.
 
 ## Contact
 
-<!-- TODO: Add your contact links below -->
-- **GitHub:** 
-- **Portfolio:** 
+**GitHub:** 
+https://github.com/tanisnus
+
 
 ---
 
