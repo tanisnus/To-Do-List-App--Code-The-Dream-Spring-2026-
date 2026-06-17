@@ -1,7 +1,6 @@
 function AboutPage() {
     return (
         <div>
-            {/* ── Section 1: Hero ── */}
             <section className="flex flex-col items-center px-8 py-16 bg-gradient-to-b from-indigo-50 to-white text-center">
                 <span className="flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-1.5 text-sm font-medium text-indigo-900 shadow-sm">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -21,7 +20,6 @@ function AboutPage() {
                 </p>
             </section>
 
-            {/* ── Section 2: Philosophy + Feature Cards ── */}
             <section className="px-8 py-16 max-w-5xl mx-auto">
                 <h2 className="text-2xl font-bold text-gray-900">
                     The Philosophy of Clarity
@@ -34,7 +32,6 @@ function AboutPage() {
                     focus remains on your tasks, not the tool.
                 </p>
 
-                {/* flex container → cards are flex items side by side */}
                 <div className="mt-8 flex flex-col gap-6 sm:flex-row">
                     <div className="flex-1 rounded-2xl border border-indigo-100 bg-indigo-50 p-6">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-[#4F46E5]">
@@ -65,7 +62,6 @@ function AboutPage() {
                 </div>
             </section>
 
-            {/* ── Section 3: Tech Stack ── */}
             <section className="px-8 py-16 max-w-5xl mx-auto">
                 <h2 className="text-2xl font-bold text-gray-900">
                     Modern Engineering Stack

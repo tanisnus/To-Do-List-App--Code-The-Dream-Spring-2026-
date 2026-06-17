@@ -3,10 +3,12 @@
 A modern, full-featured todo list application built for **Code The Dream Spring 2026**. TaskFlow helps users manage daily tasks with authentication, filtering, sorting, and a clean professional UI—designed for productivity without distraction.
 
 ## Live Demo
-https://to-do-list-app-code-the-dream-sprin.vercel.app
+
+[TaskFlow on Vercel](https://to-do-list-app-code-the-dream-sprin.vercel.app)
 
 ## Short Video Demonstration of the App
-https://www.youtube.com/watch?v=p9HoA5YFets
+
+[Watch the demo on YouTube](https://www.youtube.com/watch?v=p9HoA5YFets)
 
 ## Features
 
@@ -89,7 +91,11 @@ https://www.youtube.com/watch?v=p9HoA5YFets
    npm install
    ```
 
-3. Create a `.env` file in the project root and set your API target:
+3. Copy `.env.example` to `.env` and set your API target:
+
+   ```bash
+   cp .env.example .env
+   ```
 
    ```env
    VITE_TARGET=http://localhost:YOUR_API_PORT
@@ -103,6 +109,12 @@ https://www.youtube.com/watch?v=p9HoA5YFets
 
 5. Open the app in your browser (default: [http://localhost:3001](http://localhost:3001))
 
+### Deployment
+
+The live demo on Vercel does not require a local `.env` file. Production API requests are proxied through `vercel.json` to the hosted backend.
+
+For local development, `VITE_TARGET` in `.env` tells the Vite dev server where to forward `/api` requests. Run `npm run build` and `npm run preview` to verify the production build before deploying.
+
 ## Available Scripts
 
 | Script | Command | Description |
@@ -114,10 +126,21 @@ https://www.youtube.com/watch?v=p9HoA5YFets
 
 ## Design Decisions
 
-TaskFlow uses a **purple-forward design system** built with Tailwind CSS utility classes:
+TaskFlow uses a **purple-forward design system** built with Tailwind CSS utility classes.
+
+### Tailwind CSS setup
+
+This project uses **Tailwind CSS v4** with the Vite plugin:
+
+- `@tailwindcss/vite` is registered in `vite.config.js`
+- `src/index.css` imports Tailwind with `@import "tailwindcss"`
+- No separate `tailwind.config.js` is required for v4 — utility classes are scanned automatically from project files
+
+### UI and layout
 
 - **Color palette** — Indigo/lavender backgrounds (`indigo-50`, `indigo-100`) with `#4F46E5` as the primary accent for buttons, active states, and branding
-- **Layout** — CSS Grid for the header (logo, nav, user actions) and flexbox for todo cards, forms, and filter controls
+- **Layout** — Flexbox for the header, todo cards, forms, and filter controls; responsive stacking on smaller screens
+- **Navigation** — Horizontal nav on desktop; hamburger menu with a slide-down panel on mobile to prevent link overlap
 - **Component structure** — Reusable shared components (`Header`, `Navigation`, `UserAvatar`, `ErrorMessage`) with page-level composition
 - **Typography** — System sans-serif stack via Tailwind defaults for a clean, readable interface
 - **Cards & spacing** — Rounded corners (`rounded-xl`, `rounded-2xl`), subtle shadows, and consistent padding for visual hierarchy
@@ -144,7 +167,7 @@ This project is licensed under the MIT License.
 ```
 MIT License
 
-Copyright (c) 
+Copyright (c) 2026 tanisnus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -167,10 +190,7 @@ SOFTWARE.
 
 ## Contact
 
-**GitHub:** 
-https://github.com/tanisnus
-
-
+- **GitHub:** [github.com/tanisnus](https://github.com/tanisnus)
 ---
 
 Built with React and Tailwind CSS for Code The Dream Spring 2026.
