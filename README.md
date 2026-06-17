@@ -41,12 +41,20 @@ https://www.youtube.com/watch?v=p9HoA5YFets
 
 ### Desktop
 
-<!-- TODO: Add your desktop screenshot path below, e.g. docs/screenshots/desktop.png -->
-![Desktop view]( )
+**Todos / Workspace**
+
+![Desktop todos view](docs/screenshots/desktop-todos.png)
+
+**About**
+
+![Desktop about view](docs/screenshots/desktop-about.png)
+
+**Profile**
+
+![Desktop profile view](docs/screenshots/desktop-profile.png)
 
 ### Mobile
 
-<!-- TODO: Add your mobile screenshot path below, e.g. docs/screenshots/mobile.png -->
 ![Mobile view]( )
 
 ## Getting Started
